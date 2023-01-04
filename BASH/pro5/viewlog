@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+	echo "ERROR:invalid number of arguments"
+	echo "USAGE: ./viewlog filename.rpt"
+	exit 1
+else
+	sed -n '1,7p' $1
+	sed -n '8,179p' $1 | sed -E 's/^\S+\s+\S+\s+$//' | sed '/^$/d'
+	sed -n '180,189p' $1
+	exit 0
+fi
+
+
