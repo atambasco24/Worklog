@@ -1,0 +1,40 @@
+
+
+Will need 2 scripts: 1 bash, 1 awk. 
+
+bash script takes input file and modifies to be in a parsable format. 
+This may need to call a second bash script at the end to re-parse the file to generate values. All timestamps should be in 24 hour time. Minutes are converted to % of an hour. (multiply all minute values by 1.66667)
+
+
+
+
+EVALUATING DATA
+once the data is formatted, parse every date and turn it into a day of the week.
+Then we are reprinting the data on each line to generate the values to run a report on. 
+$empID      $totalHoursWorked     $openHoursWorked     $closedHoursWorked
+ 
+
+	if $endShiftDate != $startShiftDate    #indicates shift ended after midnight after closing
+		$endShiftTime = endShiftTime + 24 ??????
+
+	$totalHoursWorked = $shiftEndTime - $shiftStartTime
+
+
+	if $startShiftDate == friday      #this assumes we close at midnight friday, which I dont think is right, i think its 10pm
+		$openHoursWorked = 24.00 - $shiftStartTime
+		$closedHoursWorked = $totalHoursWorked - $openHoursWorked
+	elif $startShiftDate == saturday
+		$openHoursWorked = 24.00 - $shiftStartTime
+		$closedHoursWorked = $totalHoursWorked - $openHoursWorked
+	elif $startShiftDate == sunday
+		$openHoursWorked = 22.00 -  $shiftStartTime
+		$closedHoursWorke = $totalHoursWorked - $openHoursWorked
+	else 
+		$openHoursWorked = 0
+		$closedHoursWorked = $totalHoursWorked
+
+echo $empID $totalHoursWorked $openHoursWorked $closedHoursWorked > inputFile
+#do we add a check if the shift is over 6 hours? 
+#breaktime could be calculated very similarly, endBreakTime - startbreakTime, assuming startbreakTime isnt null 
+ 
+
