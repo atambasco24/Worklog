@@ -1,0 +1,110 @@
+#!/bin/bash
+
+
+set -x
+#   1       2         3         4         5         6      7  8    9   10   11        12     13 14
+# 219 2026-02-28 2026-02-28 12:32:17 2026-02-28 22:59:40 125 [{ start : 2026-02-28 16:14:02 , end : 2026-02-28 16:44:04 , type :1}] [{ oid : 869054 , oldTime :  , newTime :  , pType : 1 , breakKey :0}]
+
+if [ $# -ne 1 ]; then
+                echo "Usage: ./name filename"
+                exit 1
+        fi
+
+file=$1
+
+
+while IFS= read -r line || [[ -n $line ]]; do
+        STARTDATE=$(echo "$line" | awk '{ print $2 }' | sed 's/-/ /g')
+        ENDDATE=$(echo "$line" | awk '{ print $4 }' | sed 's/-/ /g')
+        counter=0
+
+
+        for DATE in "$STARTDATE" "$ENDDATE"
+        do
+#pulls date as argument in the form YYYY-MM-DD and calculates day of the week
+
+
+        #if the submitted date as argument is valid, grep will output the matching line, and then pipe it to wc showing 1. If the format does not match, this will output 0
+        YEAR=$(echo "$DATE" | awk '{ print $1 }')
+        MONTH=$(echo "$DATE" | awk '{ print $2 }' )
+        DAY=$(echo "$DATE" | awk '{ print $3 }')
+
+
+#pass month into this method and it sets the month code based on the input month
+
+        if [ $MONTH -eq 1 ]; then
+                if (( ($YEAR % 4 == 0 && $YEAR % 100 != 0) || $YEAR % 400 == 0 )); then
+                        MCO=6
+                else
+                        MCO=0
+                fi
+        elif [ $MONTH -eq 2 ]; then
+                if (( ($YEAR % 4 == 0 && $YEAR % 100 != 0) || $YEAR % 400 == 0 )); then
+                        MCO=2
+                else
+                        MCO=3
+                fi
+        elif [ $MONTH -eq 3 ]; then
+                MCO=3
+        elif [ $MONTH -eq 4 ]; then
+                MCO=6
+        elif [ $MONTH -eq 5 ]; then
+                MCO=1
+        elif [ $MONTH -eq 6 ]; then
+                MCO=4
+        elif [ $MONTH -eq 7 ]; then
+                MCO=6
+        elif [ $MONTH -eq 8 ]; then
+                MCO=2
+        elif [ $MONTH -eq 9 ]; then
+                MCO=5
+        elif [ $MONTH -eq 10 ]; then
+                MCO=0
+        elif [ $MONTH -eq 11 ]; then
+                MCO=3
+        elif [ $MONTH -eq 12 ]; then
+                MCO=5
+        else
+                echo "something went wrong calculating month code"
+        fi
+
+
+
+        DIVISOR=4
+
+        YEARMOD=$((YEAR % 100))
+        DYEAR=$((YEARMOD / DIVISOR))
+       # echo "DEBUG: DYEAR is $DYEAR"         #DEBUG
+
+        #6 is actually the century code, 6 if 2000 or later, 0 if 1900.
+        DAYMODULO=$((YEARMOD + DYEAR + DAY + MCO + 6))
+        DAYNUM=$((DAYMODULO % 7))
+        #echo "day value is $DAYNUM"
+        #(YEAR + DYEAR + DAY + MCO + 6) mod 7
+
+        if [ $DAYNUM -eq 0 ]; then
+                DAYNAME="SUNDAY"
+        elif [ $DAYNUM -eq 1 ]; then
+                DAYNAME="MONDAY"
+        elif [ $DAYNUM -eq 2 ]; then
+                DAYNAME="TUESDAY"
+        elif [ $DAYNUM -eq 3 ]; then
+                DAYNAME="WEDNESDAY"
+        elif [ $DAYNUM -eq 4 ]; then
+                DAYNAME="THURSDAY"
+        elif [ $DAYNUM -eq 5 ]; then
+                DAYNAME="FRIDAY"
+        elif [ $DAYNUM -eq 6 ]; then
+                DAYNAME="SATURDAY"
+        fi
+
+
+        dayresults[$counter]="$DAYNAME"
+        ((counter++))
+
+done
+
+        echo "${dayresults[0]}"
+        echo "${dayresults[1]}"
+
+done < "$file"
