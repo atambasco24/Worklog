@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+#   1       2         3         4         5         6      7  8    9   10   11        12     13 14
+# 219 2026-02-28 2026-02-28 12:32:17 2026-02-28 22:59:40 125 [{ start : 2026-02-28 16:14:02 , end : 2026-02-28 16:44:04 , type :1}] [{ oid : 869054 , oldTime :  , newTime :  , pType : 1 , breakKey :0}]
+
+#formats data to be parsible.
+sed 's/;/ /g'   # remove all ;, replace with a space
+sed 's/^[^ ]* //'  # removes first colums (DB PK ID number)
+sed -E -i 's/^([0-9]+[[:space:]]+)[0-9]{4}-[0-9]{2}-[0-9]{2}/\1/' punches #remove the first instance of date in column 2
+sed -E -i 's/  / /' #above command leaves an extra space- removes that space
+sed -E 's/\[.*//' #removes everything after the first [
